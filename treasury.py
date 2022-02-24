@@ -31,16 +31,7 @@ dl_path = str(Path.home())+'/Downloads'
 files = glob.glob(dl_path+'/'+'guild-treasury-daily'+'*.csv')
 files.sort(key=os.path.getmtime, reverse=True)
 market_file = files[0]
-"""
-[row_start:row_end , column_start, column_end]
 
-where,
-
-row_start refers start row with 0 position as index
-row_end refers last row with n th  position as index
-column_start refers start column with 0 position as index
-column_end refers last column with n th position as index
-"""
 # read treasury file into dataframe, print without index
 df = pd.read_csv(market_file, sep=',', header = 0)
 #print(df.to_string(index=False)) 
@@ -51,33 +42,7 @@ t_df = df.iloc[:1 , df.columns.get_loc('Jewelry'):] #Jewelry is the first treasu
 
 #print(m_df.iloc[:, 0])
 #print(m_df.to_string(index=False)) 
-"""
-Goods criteria
-Empty =less 15.      Good= 51-60
-Very Low= 16-25.     Very Good =61-70
-Low =26-35.            Excellent = 71-80
-Okay = 36-50.          Ready for War +81
 
-RFW= Ready For War!! ᗜಠ o ಠ)¤=[]:::::>-updated -02/14/22
-IA -----------  Good -------------- jewelry, ebony 
-EMA -------Empty--------------- Alabaster, Granite
-HMA -------Low -------------- Rope, Brick
-LMA -------- Okay --------------- Brass, silk 
-CA ---------- Excellent ------------- Wire, Porcelain
-Indy -------- Empty -------------- Coke, Rubber 
-PE ------ RFW ------------ Tinplate , Explosives 
-ME --------- Low -------------- convenience food, flavorants
-PME ------ Empty ------------ Steel, genome data 
-CE ---------- Okay ------------— Electromagnets, Robotics
-TE ---------- Very Low --------------- Smart Materials, Translucent concrete 
-FE ---------- Very Low -------------- Biodata, superconductors  
-AF ---------- RFW -------------- Paper Batteries, Bioplastic
-OF ---------- RFW ------------- Coral, Plankton
-VF ---------- RFW -----------— CryptoCash, Golden Rice
-SAM -------- RFW -------------- Fusion Reactors, Lubricants 
-SAAB ------ RFW -------------- Bromine, Compound 
-SAV --------- RFW ------------- Seaweed, MicroSupplement
-"""
 # Create a dictionary to set value uper bound thresholds
 goods_criteria_dict = {
   "Empty": 15000,
@@ -117,8 +82,7 @@ Empty =less 15.      Good= 51-60
 Very Low= 16-25.     Very Good =61-70
 Low =26-35.            Excellent = 71-80
 Okay = 36-50.          Ready for War +81
-
-RFW= Ready For War!! :::::>-updated - {updated}\n
+updated - {updated}\n
 '''.format(length='multi-line', updated=date.today())
 # gives a tuple of column name and series
 # for each column in the dataframe
@@ -131,8 +95,8 @@ age_status2 = [0]
 needed_good = "Need:  "
 print(list(t_df))
 for (columnName, columnData) in t_df.iteritems():
-    if a % 4 == 0 and a != 0: # modulus 4 if 0 then we are on a new age
-        age_index = int((g/5))
+    if a % 5 == 0 and a != 0: # modulus 4 if 0 then we are on a new age
+        age_index = int((g/5)-1)
         age = age_dict[age_index]
         if age_status != "Ready for War -- ": 
             for_clipboard+= age + age_status + needed_good + str('\n')
