@@ -3,7 +3,7 @@
 FOE Automation
 by : jahascow
 git_hub : https://github.com/jahascow
-about : this is a simple script for the game forge of empires "FOE" which
+about : This is a simple script for the game forge of empires "FOE" which
     takes the csv output download from foe_tools for guild daily treasury with 
     all options selected and determines good needs by established thresholds.
     I wrote this to help the guild NoRemorse in the us world Angkor.
@@ -31,9 +31,10 @@ dl_path = str(Path.home())+'/Downloads'
 files = glob.glob(dl_path+'/'+'guild-treasury-daily'+'*.csv')
 files.sort(key=os.path.getmtime, reverse=True)
 market_file = files[0]
-
+print(market_file)
 # read treasury file into dataframe, print without index
-df = pd.read_csv(market_file, sep=',', header = 0)
+df = pd.read_csv(market_file, sep=',', header = 0)# get only columns begininng with iron age
+df = df.tail(1)# get last row of dataframe
 #print(df.to_string(index=False)) 
 
 # drop Requested amount & Rate & 
@@ -77,11 +78,11 @@ age_dict = {
 
 
 for_clipboard = '''\
-Goods criteria (in thousands)
-Empty =less 15.      Good= 51-60
-Very Low= 16-25.     Very Good =61-70
-Low =26-35.            Excellent = 71-80
-Okay = 36-50.          Ready for War +81
+Goods criteria index (in thousands)
+a: Empty =less 15.      e: Good= 51-60
+b: Very Low= 16-25.     f: Very Good =61-70
+c: Low =26-35.            g: Excellent = 71-80
+d: Okay = 36-50.          Ready for War +81
 updated - {updated}\n
 '''.format(length='multi-line', updated=date.today())
 # gives a tuple of column name and series
@@ -107,36 +108,36 @@ for (columnName, columnData) in t_df.iteritems():
         #goods = "" 
     #goods+=columnName
     if int(columnData.values) <= goods_criteria_dict["Empty"]:
-        needed_good+=columnName + str(', ')
+        needed_good+=str('a:') + columnName + str(', ')
         age_status2.append(8)
         age_status="Empty ---------- "
     elif goods_criteria_dict["Empty"] > int(columnData.values) <= goods_criteria_dict["Very Low"]:
-        needed_good+=columnName + str(', ')
+        needed_good+=str('b:') + columnName + str(', ')
         if bool(set([8])&set(age_status2)) == False:
             age_status2.append(7)
             age_status="Very Low ------- "
     elif goods_criteria_dict["Very Low"] > int(columnData.values) <= goods_criteria_dict["Low"]:
-        needed_good+=columnName + str(', ')
+        needed_good+=str('c:') + columnName + str(', ')
         if bool(set([8,7])&set(age_status2)) == False:
             age_status2.append(6)
             age_status="Low ------------ "
     elif goods_criteria_dict["Low"] > int(columnData.values) <= goods_criteria_dict["Okay"]:
-        needed_good+=columnName + str(', ')
+        needed_good+=str('d:') + columnName + str(', ')
         if bool(set([8,7,6])&set(age_status2)) == False:
             age_status2.append(5)
             age_status="Okay ----------- "
     elif goods_criteria_dict["Okay"] > int(columnData.values) <= goods_criteria_dict["Good"]:
-        needed_good+=columnName + str(', ')
+        needed_good+=str('e:') + columnName + str(', ')
         if bool(set([8,7,6,5])&set(age_status2)) == False:
             age_status2.append(4)
             age_status="Good ----------- "
     elif goods_criteria_dict["Good"] > int(columnData.values) <= goods_criteria_dict["Very Good"]:
-        needed_good+=columnName + str(', ')
+        needed_good+=str('f:') + columnName + str(', ')
         if bool(set([8,7,6,5,4])&set(age_status2)) == False:
             age_status2.append(3)
             age_status="Very Good ------ "
     elif goods_criteria_dict["Very Good"] > int(columnData.values) <= goods_criteria_dict["Excellent"]:
-        needed_good+=columnName + str(', ')
+        needed_good+=str('g:') + columnName + str(', ')
         if bool(set([8,7,6,5,4,3])&set(age_status2)) == False:
             age_status2.append(2)
             age_status="Excellent ------ "
