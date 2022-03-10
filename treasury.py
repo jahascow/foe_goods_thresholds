@@ -111,32 +111,32 @@ for (columnName, columnData) in t_df.iteritems():
         needed_good+=str('a:') + columnName + str(', ')
         age_status2.append(8)
         age_status="Empty ---------- "
-    elif goods_criteria_dict["Empty"] > int(columnData.values) <= goods_criteria_dict["Very Low"]:
+    elif goods_criteria_dict["Empty"] <= int(columnData.values) <= goods_criteria_dict["Very Low"]:
         needed_good+=str('b:') + columnName + str(', ')
         if bool(set([8])&set(age_status2)) == False:
             age_status2.append(7)
             age_status="Very Low ------- "
-    elif goods_criteria_dict["Very Low"] > int(columnData.values) <= goods_criteria_dict["Low"]:
+    elif goods_criteria_dict["Very Low"] <= int(columnData.values) <= goods_criteria_dict["Low"]:
         needed_good+=str('c:') + columnName + str(', ')
         if bool(set([8,7])&set(age_status2)) == False:
             age_status2.append(6)
             age_status="Low ------------ "
-    elif goods_criteria_dict["Low"] > int(columnData.values) <= goods_criteria_dict["Okay"]:
+    elif goods_criteria_dict["Low"] <= int(columnData.values) <= goods_criteria_dict["Okay"]:
         needed_good+=str('d:') + columnName + str(', ')
         if bool(set([8,7,6])&set(age_status2)) == False:
             age_status2.append(5)
             age_status="Okay ----------- "
-    elif goods_criteria_dict["Okay"] > int(columnData.values) <= goods_criteria_dict["Good"]:
+    elif goods_criteria_dict["Okay"] <= int(columnData.values) <= goods_criteria_dict["Good"]:
         needed_good+=str('e:') + columnName + str(', ')
         if bool(set([8,7,6,5])&set(age_status2)) == False:
             age_status2.append(4)
             age_status="Good ----------- "
-    elif goods_criteria_dict["Good"] > int(columnData.values) <= goods_criteria_dict["Very Good"]:
+    elif goods_criteria_dict["Good"] <= int(columnData.values) <= goods_criteria_dict["Very Good"]:
         needed_good+=str('f:') + columnName + str(', ')
         if bool(set([8,7,6,5,4])&set(age_status2)) == False:
             age_status2.append(3)
             age_status="Very Good ------ "
-    elif goods_criteria_dict["Very Good"] > int(columnData.values) <= goods_criteria_dict["Excellent"]:
+    elif goods_criteria_dict["Very Good"] <= int(columnData.values) <= goods_criteria_dict["Excellent"]:
         needed_good+=str('g:') + columnName + str(', ')
         if bool(set([8,7,6,5,4,3])&set(age_status2)) == False:
             age_status2.append(2)
