@@ -72,7 +72,7 @@ Let’s Get Ready For War!! ᗜಠ o ಠ)¤=[]:::::>
 Empty =less 15k.      Good= 50-60k
 Very Low= 15-25k.     Very Good =60-70k
 Low =25-35k.            Excellent = 70-80
-Ok = 35k-50k
+Ok = 35k-50k\n
 '''.format(length='multi-line', updated=strftime("%Y-%m-%d %I:%M %p"))
 
 
@@ -116,12 +116,11 @@ for x in range(t3_df.shape[0]):
         goods += '❗ ' + t3_df['good'].values[x] + ', '
     else:
         goods += t3_df['good'].values[x] + ', '        
-
     if x % 2 == 0:
         status = str(t3_df['status'].values[x])
     if x % 2 == 1 and status != 'Ready for War- ':
-        for_clipboard += str(t3_df['age'].values[x]) + status + str(goods) + '\n'
+        for_clipboard += str(t3_df['age'].values[x]) + status + goods.rsplit(',', 1)[0] + '\n'
         goods = ''
   
-
+for_clipboard += '\nThank you everyone for your donations!'
 pyperclip.copy(for_clipboard)
