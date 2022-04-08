@@ -118,8 +118,9 @@ for x in range(t3_df.shape[0]):
         goods += t3_df['good'].values[x] + ', '        
     if x % 2 == 0:
         status = str(t3_df['status'].values[x])
-    if x % 2 == 1 and status != 'Ready for War- ':
-        for_clipboard += str(t3_df['age'].values[x]) + status + goods.rsplit(',', 1)[0] + '\n'
+    if x % 2 == 1:
+        if status != 'Ready for War- ':
+            for_clipboard += str(t3_df['age'].values[x]) + status + goods.rsplit(',', 1)[0] + '\n'
         goods = ''
   
 for_clipboard += '\nThank you everyone for your donations!'
