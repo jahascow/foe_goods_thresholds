@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 FOE Automation
 by : jahascow
@@ -83,12 +84,14 @@ if configuration == 0:
     for_clipboard = '''
     𝚃𝚛𝚎𝚊𝚜𝚞𝚛𝚢 𝚄𝚙𝚍𝚊𝚝𝚎/𝚁𝚎𝚙𝚘𝚛𝚝.  {updated}
     Let’s Get Ready For War!! ᗜಠ o ಠ)¤=[]:::::>
-    ❗️= critically empty, less than 150k
-    Empty =less 200k.      Good= 400-450k
-    Very Low= 200-250k.     Very Good =450-500k
-    Low =250-300k.            Excellent = 500+
-    Ok = 300k-350k\n
-    '''.format(length='multi-line', updated=strftime("%Y-%m-%d %I:%M %p"))
+
+    Lowest two goods below 210k by era
+------------------------------------------------
+
+'''.format(length='multi-line', updated=strftime("%Y-%m-%d %I:%M %p"))
+
+
+
 elif configuration == 1:
     for_clipboard_on = '''
     𝚃𝚛𝚎𝚊𝚜𝚞𝚛𝚢 𝚄𝚙𝚍𝚊𝚝𝚎/𝚁𝚎𝚙𝚘𝚛𝚝.  {updated}
@@ -97,8 +100,9 @@ elif configuration == 1:
     Empty =less 15k.      Good= 50-60k
     Very Low= 15-25k.     Very Good =60-70k
     Low =25-35k.            Excellent = 70-80
-    Ok = 35k-50k\n
-    '''.format(length='multi-line', updated=strftime("%Y-%m-%d %I:%M %p"))
+    Ok = 35k-50k
+
+'''.format(length='multi-line', updated=strftime("%Y-%m-%d %I:%M %p"))
 
 
 t_df = t_df.T # Transpose rows / columns
@@ -107,14 +111,14 @@ t_df.rename(columns = {t_df.columns[0]:'good',t_df.columns[1]:'volume'}, inplace
 if configuration == 0:
     conditions = [
         (t_df['volume'] <= 150000),
-        (t_df['volume'].between(150000, 200000)),
-        (t_df['volume'].between(200000, 250000)),
-        (t_df['volume'].between(250000, 300000)),
-        (t_df['volume'].between(300000, 350000)),
-        (t_df['volume'].between(350000, 400000)),
-        (t_df['volume'].between(400000, 450000)),
-        (t_df['volume'].between(450000, 500000)),
-        (t_df['volume'] >= 500000),
+        (t_df['volume'].between(150000, 151000)),
+        (t_df['volume'].between(151000, 152000)),
+        (t_df['volume'].between(152000, 153000)),
+        (t_df['volume'].between(153000, 154000)),
+        (t_df['volume'].between(154000, 155000)),
+        (t_df['volume'].between(155000, 156000)),
+        (t_df['volume'].between(156000, 210000)),
+        (t_df['volume'] > 210000),
         ]
 elif configuration == 1:
     conditions_no = [
@@ -130,14 +134,14 @@ elif configuration == 1:
         ]
 if configuration == 0:
     choices = [
-        'Critical------ ',
-        'Empty--------- ',
-        'Very Low------ ',
-        'Low----------- ',
-        'Okay---------- ',
-        'Good---------- ',
-        'Very Good----- ',
-        'Excellent----- ',
+        ' - ',
+        ' - ',
+        ' - ',
+        ' - ',
+        ' - ',
+        ' - ',
+        ' - ',
+        ' - ',
         'Ready for War- '
         ]
 elif configuration == 1:
@@ -163,17 +167,27 @@ for x in range(t_df.shape[0]):
         t3_df = pd.concat([t3_df, t2_df])
 goods,status = '',''
 for x in range(t3_df.shape[0]):
-    if t3_df['status'].values[x] == 'Critical------ ':
-        goods += '❗ ' + t3_df['good'].values[x] + ', '
-    else:
-        goods += t3_df['good'].values[x] + ', '
-    if x % 2 == 0:
+    if configuration == 0:
         status = str(t3_df['status'].values[x])
-    if x % 2 == 1:
         if status != 'Ready for War- ':
-            for_clipboard += str(t3_df['age'].values[x]) + status + goods.rsplit(',', 1)[0] + '\n'
-        goods = ''
+            goods += t3_df['good'].values[x] + ', '
+        if x % 2 == 1:
+            if status != 'Ready for War- ':
+                for_clipboard += str(t3_df['age'].values[x]) + status + goods.rsplit(',', 1)[0] + '\n'
+            goods = ''
 
-for_clipboard += '\nThank you everyone for your donations!'
+    else:
+        if t3_df['status'].values[x] == 'Critical------ ':
+            goods += '❗ ' + t3_df['good'].values[x] + ', '
+        else:
+            goods += t3_df['good'].values[x] + ', '
+        if x % 2 == 0:
+            status = str(t3_df['status'].values[x])
+        if x % 2 == 1:
+            if status != 'Ready for War- ':
+                for_clipboard += str(t3_df['age'].values[x]) + status + goods.rsplit(',', 1)[0] + '\n'
+            goods = ''
+
+for_clipboard += '\n------------------------------------------------\nThank you everyone for your donations!'
 #pyclip.copy(for_clipboard)
 print(for_clipboard)
