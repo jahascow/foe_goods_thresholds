@@ -168,12 +168,13 @@ for x in range(t_df.shape[0]):
 goods,status = '',''
 for x in range(t3_df.shape[0]):
     if configuration == 0:
-        status = str(t3_df['status'].values[x])
-        if status != 'Ready for War- ':
+        if str(t3_df['status'].values[x]) != 'Ready for War- ':
             goods += t3_df['good'].values[x] + ', '
         if x % 2 == 1:
-            if status != 'Ready for War- ':
-                for_clipboard += str(t3_df['age'].values[x]) + status + goods.rsplit(',', 1)[0] + '\n'
+            if str(t3_df['status'].values[x]) != 'Ready for War- ':
+                for_clipboard += str(t3_df['age'].values[x]) + str(t3_df['status'].values[x]) + goods.rsplit(',', 1)[0] + '\n'
+            elif goods:
+                for_clipboard += str(t3_df['age'].values[x]) + goods.rsplit(',', 1)[0] + '\n'
             goods = ''
 
     else:
