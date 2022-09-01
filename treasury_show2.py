@@ -85,7 +85,7 @@ if configuration == 0:
     𝚃𝚛𝚎𝚊𝚜𝚞𝚛𝚢 𝚄𝚙𝚍𝚊𝚝𝚎/𝚁𝚎𝚙𝚘𝚛𝚝.  {updated}
     Let’s Get Ready For War!! ᗜಠ o ಠ)¤=[]:::::>
 
-    Lowest two goods below 210k by era
+    Goods below 210k by era lowest -> greatest
 ------------------------------------------------
 
 '''.format(length='multi-line', updated=strftime("%Y-%m-%d %I:%M %p"))
@@ -163,14 +163,18 @@ t3_df = pd.DataFrame()
 for x in range(t_df.shape[0]):
     t_df['age'] = age_dict[math.floor(x/5)]
     if x % 5 == 0:
-        t2_df = t_df[x:(x+4)].sort_values(by=['volume'])[:2]
-        t3_df = pd.concat([t3_df, t2_df])
+        if configuration == 0:
+            t2_df = t_df[x:(x+5)].sort_values(by=['volume'])[:5]
+            t3_df = pd.concat([t3_df, t2_df])
+        if configuration == 1:
+            t2_df = t_df[x:(x+5)].sort_values(by=['volume'])[:2]
+            t3_df = pd.concat([t3_df, t2_df])
 goods,status = '',''
 for x in range(t3_df.shape[0]):
     if configuration == 0:
         if str(t3_df['status'].values[x]) != 'Ready for War- ':
             goods += t3_df['good'].values[x] + ', '
-        if x % 2 == 1:
+        if x % 5 == 0:
             if str(t3_df['status'].values[x]) != 'Ready for War- ':
                 for_clipboard += str(t3_df['age'].values[x]) + str(t3_df['status'].values[x]) + goods.rsplit(',', 1)[0] + '\n'
             elif goods:
