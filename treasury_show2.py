@@ -121,7 +121,7 @@ if configuration == 0:
         (t_df['volume'] > 210000),
         ]
 elif configuration == 1:
-    conditions_no = [
+    conditions = [
         (t_df['volume'] <= 3000),
         (t_df['volume'].between(3000, 15000)),
         (t_df['volume'].between(15000, 25000)),
@@ -160,8 +160,13 @@ elif configuration == 1:
 t_df['status'] = np.select(condlist=conditions, choicelist=choices)
 
 t3_df = pd.DataFrame()
+
+t_df_list = []
 for x in range(t_df.shape[0]):
-    t_df['age'] = age_dict[math.floor(x/5)]
+    t_df_list.append(age_dict[math.floor(x/5)])
+
+for x in range(t_df.shape[0]):
+    t_df['age'] = t_df_list#age_dict[math.floor(x/5)]
     if x % 5 == 0:
         if configuration == 0:
             t2_df = t_df[x:(x+5)].sort_values(by=['volume'])[:5]
@@ -169,19 +174,20 @@ for x in range(t_df.shape[0]):
         if configuration == 1:
             t2_df = t_df[x:(x+5)].sort_values(by=['volume'])[:2]
             t3_df = pd.concat([t3_df, t2_df])
-goods,status = '',''
-for x in range(t3_df.shape[0]):
-    if configuration == 0:
-        if str(t3_df['status'].values[x]) != 'Ready for War- ':
-            goods += t3_df['good'].values[x] + ', '
-        if x % 5 == 0:
-            if str(t3_df['status'].values[x]) != 'Ready for War- ':
-                for_clipboard += str(t3_df['age'].values[x]) + str(t3_df['status'].values[x]) + goods.rsplit(',', 1)[0] + '\n'
-            elif goods:
-                for_clipboard += str(t3_df['age'].values[x]) + goods.rsplit(',', 1)[0] + '\n'
-            goods = ''
 
-    else:
+# ^ confirmed above good
+
+goods,status = '',''
+if configuration == 0:
+    t3_df = t3_df.loc[t3_df['status'] != 'Ready for War- ']
+    for i in range(len(age_dict)):
+        goods_df = t3_df.loc[t3_df['age'] == age_dict[i]].copy()
+        if goods_df.empty == False:
+            erra_goods = [val.strip() for sublist in goods_df.good.dropna().str.split(",").tolist() for val in sublist]
+            erra_goods = ', '.join(erra_goods)
+            for_clipboard += str(goods_df['age'].values[0]) + erra_goods + '\n'
+elif configuration == 1:
+    for x in range(t3_df.shape[0]):
         if t3_df['status'].values[x] == 'Critical------ ':
             goods += '❗ ' + t3_df['good'].values[x] + ', '
         else:
