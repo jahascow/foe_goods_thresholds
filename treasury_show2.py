@@ -18,11 +18,16 @@ import pyclip #pyperclip
 import math
 from time import strftime
 
+
 # set directory for downloads folder
 dl_path = str(Path.home())+'/Downloads'
-configuration = 0 # 0 for MDT, 1 for noremorse, carthage
+configuration = 0 # 0 for MDT, 1 for noremorse
+run_type = 0 # 0 for self goods, 1 for guild
 # get newest treasury file
-files = glob.glob(dl_path+'/'+'guild-treasury-daily'+'*.csv')
+if run_type != 0:
+    files = glob.glob(dl_path+'/'+'guild-treasury-daily'+'*.csv')
+else:
+    files = glob.glob(dl_path+'/'+'your-treasure-daily'+'*.csv')
 files.sort(key=os.path.getmtime, reverse=True)
 market_file = files[0]
 print(market_file)
@@ -30,6 +35,9 @@ print(market_file)
 df = pd.read_csv(market_file, sep=',', header = 0)# get only columns begininng with iron age
 df = df.tail(1)# get last row of dataframe
 t_df = df.iloc[:1 , df.columns.get_loc('Jewelry'):] #Jewelry is the first treasury good
+t_df = t_df.T # Transpose rows / columns
+t_df.reset_index(inplace=True)
+t_df.rename(columns = {t_df.columns[0]:'good',t_df.columns[1]:'volume'}, inplace = True)
 
 
 # Create a dictionary to set value uper bound thresholds
@@ -90,8 +98,6 @@ if configuration == 0:
 
 '''.format(length='multi-line', updated=strftime("%Y-%m-%d %I:%M %p"))
 
-
-
 elif configuration == 1:
     for_clipboard_on = '''
     𝚃𝚛𝚎𝚊𝚜𝚞𝚛𝚢 𝚄𝚙𝚍𝚊𝚝𝚎/𝚁𝚎𝚙𝚘𝚛𝚝.  {updated}
@@ -104,10 +110,6 @@ elif configuration == 1:
 
 '''.format(length='multi-line', updated=strftime("%Y-%m-%d %I:%M %p"))
 
-
-t_df = t_df.T # Transpose rows / columns
-t_df.reset_index(inplace=True)
-t_df.rename(columns = {t_df.columns[0]:'good',t_df.columns[1]:'volume'}, inplace = True)
 if configuration == 0:
     conditions = [
         (t_df['volume'] <= 150000),
@@ -157,8 +159,54 @@ elif configuration == 1:
         'Ready for War- '
         ]
 
-t_df['status'] = np.select(condlist=conditions, choicelist=choices)
 
+########################################################################
+# code for determining the three highest goods to trade from by erra
+def get_market_exceptions():
+    images_dict = {
+        16: "Cloth", 17: "Ebony", 18: "Jewelry", 19: "Iron", 20: "Limestone",
+        21: "Copper", 22: "Gold", 23: "Granite", 24: "Honey", 25: "Alabaster",
+        26: "Brick", 27: "Glass", 28: "Dried Herbs", 29: "Ropes", 30: "Salt",
+        31: "Basalt", 32: "Brass", 33: "Gunpowder", 34: "Silk", 35: "Talc Powder",
+        36: "Coffee", 37: "Paper", 38: "Porcelain", 39: "Tar", 40: "Wire",
+        41: "Coke", 42: "Fertilizer", 43: "Rubber", 44: "Textiles", 45: "Whale Oil",
+        46: "Asbestos", 47: "Explosives", 48: "Machine Parts", 49: "Gasoline", 50: "Tinplate",
+        51: "Convenience Food", 52: "Ferroconcrete", 53: "Flavorants", 54: "Luxury Materials", 55: "Packaging",
+        56: "Genome Data", 57: "Industrial Filters", 58: "Renewable Resources", 59: "Semiconductors", 60: "Steel",
+        61: "Bionics Data", 62: "Electromagnets", 63: "Gas", 64: "Plastics", 65: "Robots",
+        66: "Nutrition Research", 67: "Papercrete", 68: "Preservatives", 69: "Smart Materials", 70: "Translucent Concrete",
+        71: "Algae", 72: "Biogeochemical Data", 73: "Nanoparticles", 74: "Purified Water", 75: "Superconductors",
+        76: "AI data", 77: "Bioplastics", 78: "Nanowire", 79: "Paper Batteries", 80: "Transester gas",
+        81: "Artificial Scales", 82: "Biolight", 83: "Corals", 84: "Pearls", 85: "Plankton",
+        86: "Cryptocash", 87: "Data Crystals", 88: "Golden Rice", 89: "Nanites", 90: "Tea Silk",
+        91: "BioTech Crops", 92: "Fusion Reactors", 93: "Lubricants", 94: "Mars Microbes", 95: "Superalloys",
+        96: "Bromine", 97: "Compound Fluid", 98: "Nickel", 99: "Platinum Crystal", 100: "Processed Material",
+        101: "Glowing Seaweed", 102: "Herbal Snack", 103: "Microgreen Supplements", 104: "Soy Proteins", 105: "Sugar Crystals",
+        }
+    market_df = t_df.copy()
+    images_df = pd.DataFrame(images_dict, index=['good',]).T
+    images_df = images_df.rename_axis('good_keys').reset_index()
+    market_df = pd.merge(market_df, images_df, how='left', on = 'good')
+    market_df = market_df[market_df['good_keys'].notna()]
+    market_list = ''
+    market_list_verbose = []
+
+    for i in range(len(age_dict)-1): # subtracting 1 as I have not included the next erra of goods
+       market_erra_df = market_df[(i*5):((i*5)+5)]
+       market_erra_df = market_erra_df.sort_values(by=['volume'], ascending=True)[:5]
+       for i2 in range(2):
+           market_list+= str(int(market_erra_df['good_keys'][i2:i2+1].values[0])) + ','
+           market_list_verbose.append(age_dict[i] + ' ' + market_erra_df['good'][i2:i2+1].values[0])
+
+    print(market_list_verbose,market_list)
+
+
+
+if run_type == 0:
+    get_market_exceptions()
+########################################################################
+
+t_df['status'] = np.select(condlist=conditions, choicelist=choices)
 t3_df = pd.DataFrame()
 
 t_df_list = []
@@ -182,6 +230,7 @@ if configuration == 0:
     t3_df = t3_df.loc[t3_df['status'] != 'Ready for War- ']
     for i in range(len(age_dict)):
         goods_df = t3_df.loc[t3_df['age'] == age_dict[i]].copy()
+
         if goods_df.empty == False:
             erra_goods = [val.strip() for sublist in goods_df.good.dropna().str.split(",").tolist() for val in sublist]
             erra_goods = ', '.join(erra_goods)
@@ -201,4 +250,5 @@ elif configuration == 1:
 
 for_clipboard += '\n------------------------------------------------\nThank you everyone for your donations!'
 #pyclip.copy(for_clipboard)
-print(for_clipboard)
+if run_type != 0:
+    print(for_clipboard)
